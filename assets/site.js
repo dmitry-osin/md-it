@@ -3,6 +3,79 @@
   const root = document.documentElement;
   const languageButtons = [...document.querySelectorAll('[data-language]')];
   const home = document.body.dataset.page === 'home';
+  const storeUrl = 'https://chromewebstore.google.com/detail/pbajjhnmfaopgjblomoecaaokihjajli';
+  let storePublished = false;
+  // Advisory only: browser strings can be reduced or spoofed. Never block the store link.
+  function detectBrowser() {
+    const agent = navigator.userAgent || '';
+    const brands = navigator.userAgentData?.brands || [];
+    const mobile = navigator.userAgentData?.mobile || /Android|iPhone|iPad|iPod|Mobile/i.test(agent)
+      || (/Macintosh/i.test(agent) && navigator.maxTouchPoints > 1);
+    if (mobile) return 'mobile';
+    if (/Firefox\//i.test(agent)) return 'firefox';
+    if (/Edg\/|OPR\/|Vivaldi\/|YaBrowser\/|Brave\/|Chromium\//i.test(agent)
+      || brands.some(({ brand }) => /Microsoft Edge|Opera|Brave|Vivaldi|Yandex/i.test(brand))) return 'chromium';
+    if (brands.some(({ brand }) => brand === 'Google Chrome')) return 'chrome';
+    if (brands.some(({ brand }) => brand === 'Chromium')) return 'chromium';
+    if (/Chrome\//i.test(agent)) return 'chrome';
+    return 'other';
+  }
+  const browser = detectBrowser();
+  root.dataset.browser = browser;
+  const browserNotes = {
+    chrome: {
+      ru: 'Для Chrome на компьютере.',
+      en: 'For desktop Chrome.'
+    },
+    firefox: {
+      ru: 'Версия для Firefox пока в разработке. Для установки расширения нужен Chrome на компьютере.',
+      en: 'The Firefox version is still in development. Desktop Chrome is required to install the extension.'
+    },
+    mobile: {
+      ru: 'Для установки откройте эту страницу в Chrome на компьютере. Версия для Firefox пока в разработке.',
+      en: 'To install, open this page in desktop Chrome. The Firefox version is still in development.'
+    },
+    chromium: {
+      ru: 'Расширение предназначено для Chrome на компьютере. Совместимость с другими браузерами Chromium не гарантируется. Версия для Firefox пока в разработке.',
+      en: 'The extension is intended for desktop Chrome. Compatibility with other Chromium browsers is not guaranteed. The Firefox version is still in development.'
+    },
+    other: {
+      ru: 'Для установки нужен Chrome на компьютере. Версия для Firefox пока в разработке.',
+      en: 'Installation requires desktop Chrome. The Firefox version is still in development.'
+    }
+  };
+
+  function updateStoreUI(lang) {
+    root.dataset.storeAvailability = storePublished ? 'published' : 'pending';
+    document.querySelectorAll('[data-store-link]').forEach(element => { element.hidden = !storePublished; });
+    document.querySelectorAll('[data-store-pending]').forEach(element => { element.hidden = storePublished; });
+    document.querySelectorAll('[data-install-label]').forEach(element => {
+      element.textContent = browser === 'chrome'
+        ? (lang === 'ru' ? 'Установить в Chrome' : 'Add to Chrome')
+        : (lang === 'ru' ? 'Открыть Chrome Web Store' : 'Open Chrome Web Store');
+    });
+    document.querySelectorAll('[data-store-status]').forEach(element => {
+      element.textContent = storePublished
+        ? (lang === 'ru' ? 'Расширение доступно в Chrome Web Store.' : 'The extension is available in the Chrome Web Store.')
+        : (lang === 'ru' ? 'Ожидает публикации в Chrome Web Store.' : 'Awaiting publication in the Chrome Web Store.');
+    });
+  }
+
+  async function refreshStoreStatus() {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      const response = await fetch('/md-it/assets/store-status.json', {
+        cache: 'no-store', credentials: 'omit', signal: controller.signal
+      });
+      if (!response.ok) return;
+      const status = await response.json();
+      if (status.url !== storeUrl || !['pending', 'published'].includes(status.status)) return;
+      storePublished = status.status === 'published';
+      updateStoreUI(root.lang);
+    } catch { /* A missing snapshot or network failure keeps the last known UI state. */ }
+    finally { clearTimeout(timeout); }
+  }
   const descriptions = {
     home: {
       ru: ['Markdown-It — веб-страницы в Markdown', 'Markdown-It — Chrome-расширение для локального преобразования веб-страниц в Markdown. Выберите содержимое, скопируйте результат или сохраните .md.'],
@@ -20,6 +93,10 @@
     document.querySelectorAll('[data-ru][data-en]').forEach(element => {
       element.textContent = element.dataset[lang];
     });
+    document.querySelectorAll('[data-browser-note]').forEach(element => {
+      element.textContent = browserNotes[browser][lang];
+    });
+    updateStoreUI(lang);
     document.querySelectorAll('[data-aria-ru]').forEach(element => {
       element.setAttribute('aria-label', element.getAttribute(`data-aria-${lang}`));
     });
@@ -68,6 +145,9 @@
   setLanguage(initialLanguage);
   document.querySelectorAll('.language-switch').forEach(element => { element.hidden = false; });
   languageButtons.forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.language, true)));
+  refreshStoreStatus();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStoreStatus(); });
+  setInterval(() => { if (!document.hidden) refreshStoreStatus(); }, 5 * 60 * 1000);
 
   const tabs = [...document.querySelectorAll('[data-demo]')];
   if (tabs.length) {

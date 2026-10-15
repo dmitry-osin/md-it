@@ -1,5 +1,6 @@
 """Check static pages, local references, policy completeness, and publish inputs."""
 from html.parser import HTMLParser
+import json
 from pathlib import Path
 import re
 import struct
@@ -79,8 +80,11 @@ def check():
     icon = (ROOT / "assets/icon.png").read_bytes()
     assert icon[25] == 6, "Icon must preserve its RGBA channel"
     print("PASS assets: 8 original 1280x800 screenshots and RGBA PNG icon")
-    for file in ("assets/site.css", "assets/site.js", ".nojekyll", "robots.txt", "sitemap.xml"):
+    for file in ("assets/site.css", "assets/site.js", "assets/store-status.json", ".nojekyll", "robots.txt", "sitemap.xml"):
         assert (ROOT / file).is_file(), f"Missing publish input: {file}"
+    status = json.loads((ROOT / "assets/store-status.json").read_text(encoding="utf-8"))
+    assert status["status"] in ("pending", "published")
+    assert status["url"] == "https://chromewebstore.google.com/detail/pbajjhnmfaopgjblomoecaaokihjajli"
     assert "prefers-reduced-motion" in (ROOT / "assets/site.css").read_text(encoding="utf-8")
     print("All static checks passed.")
 

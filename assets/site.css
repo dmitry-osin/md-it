@@ -793,6 +793,87 @@ summary::marker {
 .site-footer>a:hover {
   text-decoration:underline
 }
+.browser-note {
+  margin-top:15px;
+  padding:12px 15px;
+  border-left:3px solid var(--blue);
+  background:#f0f5ff;
+  color:#344c6d;
+  border-radius:0 7px 7px 0;
+  font-size:12px;
+  line-height:1.8;
+}
+:root[data-browser="firefox"] .browser-note,
+:root[data-browser="mobile"] .browser-note,
+:root[data-browser="other"] .browser-note,
+:root[data-browser="chromium"] .browser-note {
+  border-color:#99620e;
+  background:#fff7e9;
+  color:#704b14;
+}
+.store-status {
+  margin-top:12px;
+  font-size:11px;
+  line-height:1.8;
+  color:var(--muted);
+}
+.pending-store {
+  display:inline-flex;
+  align-items:center;
+  min-height:53px;
+  padding:13px 20px;
+  border:1px solid #dce4ef;
+  border-radius:8px;
+  background:#f0f3f8;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:600;
+}
+.pending-store-small {
+  min-height:42px;
+  padding:9px 13px;
+  font-size:11px;
+}
+.store-install > .button,
+.store-install > .pending-store {
+  max-width:100%;
+  gap:16px;
+}
+.store-install {
+  display:flex;
+  align-items:center;
+  gap:30px;
+  padding:28px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#f9fbfe;
+}
+.store-install > div {
+  flex:1;
+  min-width:0;
+}
+.store-install h3 {
+  margin-bottom:12px;
+}
+.store-install p:not(.browser-note) {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.85;
+}
+.store-install > .button {
+  flex-shrink:0;
+}
+@media(max-width:800px) {
+  .store-install {
+    align-items:flex-start;
+    flex-direction:column;
+    gap:22px;
+    padding:22px;
+  }
+  .hero-actions {
+    gap:16px 23px;
+  }
+}
 /* The policy remains complete and readable when JavaScript is disabled. */
 .policy-header .main-nav {
   gap:24px
