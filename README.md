@@ -5,7 +5,8 @@
 - Главная: `https://dmitry-osin.github.io/md-it/`
 - Полная политика: `https://dmitry-osin.github.io/md-it/policy`
 - Допустимый ответ на адрес политики: перенаправление на `/md-it/policy/`.
-- Контакт автора, подтверждённый материалами расширения: `d@osin.pro`.
+- Автор: [dmitry-osin на GitHub](https://github.com/dmitry-osin).
+- Ошибки и предложения: [GitHub Issues](https://github.com/dmitry-osin/markdown-it-issues/issues).
 
 ## Файлы
 
@@ -19,7 +20,7 @@ assets/icon.png                Исходный прозрачный PNG без 
 assets/icon-128.png            Подготовленная иконка для favicon и интерфейса
 assets/screenshots/en/*.png    panel, picker, preview, options — оригиналы 1280×800
 assets/screenshots/ru/*.png    panel, picker, preview, options — оригиналы 1280×800
-PRIVACY.md                     Дословная локальная копия обеих версий политики
+PRIVACY.md                     Обе версии политики с актуальными контактами
 scripts/policy.py              Обновление HTML из локального PRIVACY.md
 scripts/check.py               Проверки структуры, ресурсов и полноты политики
 scripts/serve.py               Локальный сервер с префиксом /md-it/
@@ -108,7 +109,7 @@ Workflow подготовлен по актуальной официальной
 
 Переводы главной лежат непосредственно в HTML: пары `data-ru` / `data-en`, а доступные подписи — `data-aria-*` и `data-alt-*`. Никакого сетевого запроса для выбора языка нет.
 
-Политика не сокращалась: её тексты перенесены дословно. При согласованном обновлении сначала замените локальный `PRIVACY.md`, затем выполните:
+Политика не сокращалась. По указанию автора email заменён на профиль GitHub и репозиторий для обращений; остальные положения сохранены. Локальная копия `PRIVACY.md` и HTML содержат одинаковые тексты обеих языковых версий. Исходный проект расширения не изменялся. При согласованном обновлении сначала замените локальный `PRIVACY.md`, затем выполните:
 
 ```sh
 python scripts/policy.py

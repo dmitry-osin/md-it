@@ -1,9 +1,17 @@
-"""Regenerate the policy body from the local, verbatim bilingual PRIVACY.md."""
+"""Regenerate the policy body from the local bilingual PRIVACY.md."""
 from html import escape
 from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def paragraph(text):
+    html = escape(text)
+    for url in ("https://github.com/dmitry-osin/markdown-it-issues/issues", "https://github.com/dmitry-osin"):
+        # Include a boundary so the profile URL cannot match inside the issues URL.
+        html = re.sub(re.escape(url) + r"(?=[\s.]|$)", lambda _: f'<a href="{url}">{url}</a>', html)
+    return html
 
 
 def articles():
@@ -22,7 +30,7 @@ def articles():
                 heading += 1
             else:
                 css = ' class="policy-meta"' if index == 0 else ""
-                result.append(f'<p{css}>{escape(block)}</p>')
+                result.append(f'<p{css}>{paragraph(block)}</p>')
         result.append("</article>")
     return "\n".join(result)
 

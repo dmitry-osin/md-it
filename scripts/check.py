@@ -67,7 +67,7 @@ def check():
             self.parts.append(data)
     plain = Text()
     plain.feed(policy)
-    text = re.sub(r"\s+", " ", " ".join(plain.parts))
+    text = re.sub(r"\s+", " ", "".join(plain.parts))
     for paragraph in re.split(r"\n\s*\n", source.strip()):
         normalized = re.sub(r"\s+", " ", re.sub(r"^#+ ", "", paragraph)).strip()
         assert normalized in text, f"Policy paragraph missing or changed: {normalized[:100]}"

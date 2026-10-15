@@ -767,10 +767,19 @@ summary::marker {
   color:var(--muted);
   margin-top:7px
 }
-.contact-section>.text-link {
-  margin-left:auto;
+.contact-section>div:not(.contact-links) {
+  flex:1;
+  min-width:180px
+}
+.contact-links {
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px 22px;
+  margin-left:auto
+}
+.contact-links .text-link {
   color:var(--blue);
-  font-size:16px
+  font-size:14px
 }
 .site-footer {
   display:flex;
@@ -951,6 +960,8 @@ summary::marker {
   color:var(--muted)
 }
 .policy-contact a {
+  display:block;
+  margin-top:8px;
   font-size:13px;
   color:var(--blue)
 }
@@ -1264,7 +1275,7 @@ summary::marker {
     width:44px;
     height:44px
   }
-  .contact-section>.text-link {
+  .contact-links {
     margin-left:59px;
     margin-top:5px
   }

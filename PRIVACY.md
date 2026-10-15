@@ -1,6 +1,6 @@
 # Privacy policy for Markdown-It
 
-Last updated: 2026-10-15. Publisher: Dmitry Osin. Contact: d@osin.pro.
+Last updated: 2026-10-15. Publisher: Dmitry Osin. Contact: https://github.com/dmitry-osin.
 
 ## Local processing
 
@@ -24,11 +24,11 @@ Remote images in Preview are blocked until you click Load images. That action ma
 
 Locally handled data is used only to provide the conversion, profile, rule, and Preview features you request. It is not used for advertising, sold, or used to determine creditworthiness or for lending. The publisher has no remote access to read your conversions or configuration. Markdown-It's use of information complies with the Chrome Web Store User Data Policy, including its Limited Use requirements.
 
-If these practices change, this policy and its update date will be revised. For privacy questions, contact d@osin.pro. This page describes the extension; it does not claim that external websites or your operating system follow the same practices.
+If these practices change, this policy and its update date will be revised. For privacy questions, open an issue at https://github.com/dmitry-osin/markdown-it-issues/issues. This page describes the extension; it does not claim that external websites or your operating system follow the same practices.
 
 # Политика конфиденциальности Markdown-It
 
-Обновлено: 15.10.2026. Автор: Дмитрий Осин. Контакт: d@osin.pro.
+Обновлено: 15.10.2026. Автор: Дмитрий Осин. Контакт: https://github.com/dmitry-osin.
 
 ## Локальная обработка
 
@@ -52,4 +52,4 @@ Preview временно сохраняет готовый Markdown, адрес 
 
 Локальные данные используются только для запрошенных вами функций конвертации, профилей, правил и Preview. Данные не продаются, не используются для рекламы, оценки кредитоспособности или кредитования. У автора нет удалённого доступа к результатам конвертации и конфигурации. Использование информации в Markdown-It соответствует Chrome Web Store User Data Policy, включая требования Limited Use.
 
-При изменении обработки данных эта политика и дата обновления будут пересмотрены. Вопросы о конфиденциальности можно направить на d@osin.pro. Эта страница описывает расширение и не распространяет его правила на внешние сайты или операционную систему.
+При изменении обработки данных эта политика и дата обновления будут пересмотрены. Вопросы о конфиденциальности можно направить через GitHub Issues: https://github.com/dmitry-osin/markdown-it-issues/issues. Эта страница описывает расширение и не распространяет его правила на внешние сайты или операционную систему.
