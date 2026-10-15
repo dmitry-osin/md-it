@@ -36,7 +36,7 @@ jobs:
           cp index.html .nojekyll robots.txt sitemap.xml _site/
           cp policy/index.html _site/policy/
           cp -R assets _site/assets
-      - name: Check Chrome Web Store availability
+      - name: Check Chrome Web Store availability and version
         id: store
         run: python3 scripts/store_status.py
       - name: Configure Pages

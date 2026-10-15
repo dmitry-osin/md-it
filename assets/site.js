@@ -5,6 +5,14 @@
   const home = document.body.dataset.page === 'home';
   const storeUrl = 'https://chromewebstore.google.com/detail/pbajjhnmfaopgjblomoecaaokihjajli';
   let storePublished = false;
+  let storeVersion = null;
+
+  function validVersion(value) {
+    return typeof value === 'string'
+      && /^(?:0|[1-9][0-9]{0,4})(?:\.(?:0|[1-9][0-9]{0,4})){0,3}$/.test(value)
+      && value.split('.').every(part => Number(part) <= 65535)
+      && value.split('.').some(part => Number(part) > 0);
+  }
   // Advisory only: browser strings can be reduced or spoofed. Never block the store link.
   function detectBrowser() {
     const agent = navigator.userAgent || '';
@@ -47,6 +55,11 @@
 
   function updateStoreUI(lang) {
     root.dataset.storeAvailability = storePublished ? 'published' : 'pending';
+    document.querySelectorAll('[data-store-version]').forEach(element => {
+      element.hidden = !storePublished || !storeVersion;
+      element.textContent = storePublished && storeVersion ? `v${storeVersion}` : '';
+      if (!element.hidden) element.setAttribute('aria-label', `${lang === 'ru' ? 'Версия' : 'Version'} ${storeVersion}`);
+    });
     document.querySelectorAll('[data-store-link]').forEach(element => { element.hidden = !storePublished; });
     document.querySelectorAll('[data-store-pending]').forEach(element => { element.hidden = storePublished; });
     document.querySelectorAll('[data-install-label]').forEach(element => {
@@ -72,6 +85,7 @@
       const status = await response.json();
       if (status.url !== storeUrl || !['pending', 'published'].includes(status.status)) return;
       storePublished = status.status === 'published';
+      storeVersion = storePublished && validVersion(status.version) ? status.version : null;
       updateStoreUI(root.lang);
     } catch { /* A missing snapshot or network failure keeps the last known UI state. */ }
     finally { clearTimeout(timeout); }

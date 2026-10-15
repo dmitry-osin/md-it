@@ -84,6 +84,8 @@ def check():
         assert (ROOT / file).is_file(), f"Missing publish input: {file}"
     status = json.loads((ROOT / "assets/store-status.json").read_text(encoding="utf-8"))
     assert status["status"] in ("pending", "published")
+    from store_status import valid_snapshot
+    assert valid_snapshot(status), "Invalid store availability/version snapshot"
     assert status["url"] == "https://chromewebstore.google.com/detail/pbajjhnmfaopgjblomoecaaokihjajli"
     assert "prefers-reduced-motion" in (ROOT / "assets/site.css").read_text(encoding="utf-8")
     print("All static checks passed.")

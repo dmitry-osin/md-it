@@ -243,12 +243,18 @@ button:disabled {
   background:var(--teal)
 }
 .version {
+  white-space:nowrap;
+  flex-shrink:0;
   color:var(--muted);
   border:1px solid var(--line);
   padding:2px 7px;
   border-radius:4px;
   font-size:9px;
   letter-spacing:.4px
+}
+.hero-copy>.eyebrow {
+  flex-wrap:wrap;
+  row-gap:7px
 }
 .hero h1 {
   font-size:clamp(40px,4.45vw,65px);
