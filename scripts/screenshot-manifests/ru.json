@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "locale": "ru-RU",
+  "source": "https://docs.markdown-it.example/guide",
+  "capturedAt": "2026-10-16T09:31:05.996Z",
+  "files": [
+    {
+      "name": "panel",
+      "width": 1280,
+      "height": 800,
+      "sha256": "0cb8cf06d3ab14127f1f0a50fdde5eee5b99355dcd99dc1924e1598158736abd",
+      "source": "https://docs.markdown-it.example/guide"
+    },
+    {
+      "name": "picker",
+      "width": 1280,
+      "height": 800,
+      "sha256": "92b14f5ed782e79ff249759ca5af2b672188f8ccf0c8f438769c96c1def27e7b",
+      "source": "https://docs.markdown-it.example/guide"
+    },
+    {
+      "name": "preview",
+      "width": 1280,
+      "height": 800,
+      "sha256": "a1d180907bdf8ff962cf2560fb50295a55c6424aa14946c955bfd504ff5f476c",
+      "source": "https://docs.markdown-it.example/guide"
+    },
+    {
+      "name": "tables",
+      "width": 1280,
+      "height": 800,
+      "sha256": "9652216d4019792a1ed7473772ad6a424f0bacae8c16c3013d510d55aba2d0f2",
+      "source": "https://docs.markdown-it.example/tables"
+    },
+    {
+      "name": "options",
+      "width": 1280,
+      "height": 800,
+      "sha256": "1f8ac719a6db13b11ba1a3feb4973cf47c8e1321c1081364b693e9a08ec87408",
+      "source": "https://docs.markdown-it.example/guide"
+    }
+  ]
+}

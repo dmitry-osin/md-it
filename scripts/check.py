@@ -1,5 +1,6 @@
 """Check static pages, local references, policy completeness, and publish inputs."""
 from html.parser import HTMLParser
+from hashlib import sha256
 import json
 from pathlib import Path
 import re
@@ -8,6 +9,7 @@ from urllib.parse import urlsplit, unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 PREFIX = "/md-it/"
+SHOTS = ("panel", "picker", "preview", "tables", "options")
 
 
 class Page(HTMLParser):
@@ -17,9 +19,18 @@ class Page(HTMLParser):
         self.ids = []
         self.images = []
         self.translations = 0
+        self.tags = []
+        self.panels = {}
+        self.panel = None
 
     def handle_starttag(self, tag, attributes):
         attrs = dict(attributes)
+        self.tags.append((tag, attrs))
+        if tag == "figure" and "demo-panel" in attrs.get("class", "").split():
+            self.panel = attrs["id"]
+            self.panels[self.panel] = []
+        if self.panel:
+            self.panels[self.panel].append((tag, attrs))
         if "id" in attrs:
             self.ids.append(attrs["id"])
         for key in ("href", "src"):
@@ -29,7 +40,40 @@ class Page(HTMLParser):
             self.images.append(attrs)
         if "data-ru" in attrs:
             assert "data-en" in attrs, "Missing English translation"
+            assert attrs["data-ru"] and attrs["data-en"], "Empty translation"
             self.translations += 1
+
+    def handle_endtag(self, tag):
+        if tag == "figure":
+            self.panel = None
+
+
+def check_gallery(page):
+    tabs = [attrs for tag, attrs in page.tags if "data-demo" in attrs]
+    assert tuple(tab["data-demo"] for tab in tabs) == SHOTS, "Incorrect gallery tab order"
+    assert tuple(page.panels) == tuple(f"demo-{shot}" for shot in SHOTS)
+    labels = (("Панель", "Panel"), ("Выбор элемента", "Element Picker"),
+              ("Предпросмотр", "Preview"), ("Таблицы", "Tables"), ("Настройки", "Settings"))
+    for shot, tab, (ru, en) in zip(SHOTS, tabs, labels, strict=True):
+        assert tab["id"] == f"tab-{shot}" and tab["aria-controls"] == f"demo-{shot}"
+        panel = page.panels[f"demo-{shot}"]
+        figure = panel[0][1]
+        assert figure["aria-labelledby"] == tab["id"] and "hidden" not in figure
+        image, = [attrs for tag, attrs in panel if tag == "img"]
+        assert image["data-shot"] == shot
+        assert image["src"] == f"{PREFIX}assets/screenshots/ru/{shot}.png"
+        assert (image["width"], image["height"]) == ("1280", "800")
+        assert image["alt"] == image["data-alt-ru"] and image["data-alt-en"]
+        links = [attrs for tag, attrs in panel if "data-shot-link" in attrs]
+        assert len(links) == 2, f"Missing full-size links: {shot}"
+        for link in links:
+            assert link["data-shot-link"] == shot and link["href"] == image["src"]
+            assert link["target"] == "_blank" and "noopener" in link["rel"]
+        assert any(tag == "figcaption" for tag, attrs in panel)
+        assert len([attrs for tag, attrs in panel if "data-ru" in attrs]) == 3
+        assert any(attrs.get("data-ru") == ru and attrs.get("data-en") == en
+                   for tag, attrs in page.tags if tag == "span"), f"Missing tab translations: {shot}"
+    print("PASS gallery: five ordered tabs, localized images/captions/alt, full-size links, no-JS figures")
 
 
 def check():
@@ -56,6 +100,8 @@ def check():
                 target /= "index.html"
             assert target.is_file(), f"Missing local resource: {target}"
         assert not re.search(r"[A-Z]:[\\/]|localhost|127\.0\.0\.1", content), "Local path in public HTML"
+        if relative == "index.html":
+            check_gallery(page)
         print(f"PASS {relative}: {len(page.ids)} IDs, {len(page.refs)} references, {page.translations} translations")
     policy = (ROOT / "policy/index.html").read_text(encoding="utf-8")
     source = (ROOT / "PRIVACY.md").read_text(encoding="utf-8")
@@ -73,13 +119,19 @@ def check():
         assert normalized in text, f"Policy paragraph missing or changed: {normalized[:100]}"
     print("PASS policy: both language versions match every paragraph in PRIVACY.md")
     for locale in ("en", "ru"):
-        for shot in ("panel", "picker", "preview", "options"):
+        manifest = json.loads((ROOT / f"scripts/screenshot-manifests/{locale}.json").read_text(encoding="utf-8"))
+        assert manifest["locale"] == {"en": "en-US", "ru": "ru-RU"}[locale]
+        assert tuple(file["name"] for file in manifest["files"]) == SHOTS
+        assert {file.stem for file in (ROOT / f"assets/screenshots/{locale}").glob("*.png")} == set(SHOTS)
+        for shot, original in zip(SHOTS, manifest["files"], strict=True):
             data = (ROOT / f"assets/screenshots/{locale}/{shot}.png").read_bytes()
             assert data[:8] == b"\x89PNG\r\n\x1a\n"
             assert struct.unpack(">II", data[16:24]) == (1280, 800)
+            assert (original["width"], original["height"]) == (1280, 800)
+            assert sha256(data).hexdigest() == original["sha256"], f"Changed original: {locale}/{shot}"
     icon = (ROOT / "assets/icon.png").read_bytes()
     assert icon[25] == 6, "Icon must preserve its RGBA channel"
-    print("PASS assets: 8 original 1280x800 screenshots and RGBA PNG icon")
+    print("PASS assets: 10 original 1280x800 screenshots (SHA-256 verified) and RGBA PNG icon")
     for file in ("assets/site.css", "assets/site.js", "assets/store-status.json", ".nojekyll", "robots.txt", "sitemap.xml"):
         assert (ROOT / file).is_file(), f"Missing publish input: {file}"
     status = json.loads((ROOT / "assets/store-status.json").read_text(encoding="utf-8"))
